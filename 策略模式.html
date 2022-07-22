@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+    var obj = {
+        [Symbol.iterator]: function (){
+            return {
+                next: function () {
+                    return {
+                        value: 1,
+                        done: false
+                    }
+                }
+            }
+        }
+    }
+</script>
+</html>

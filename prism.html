@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Prism</title>
+    <link rel="stylesheet" href="./css/prism.css" data-noprefix />
+</head>
+<body>
+
+<pre class="language-javascript line-numbers"><code class="language-javascript">
+      files.keys().forEach((fileName) => {
+        const name = path.basename(fileName, '.ts'); // 获取文件的名字
+        modules[name] = files(fileName).default || files(fileName);
+        console.log(modules);
+      });
+    </code></pre>
+<pre><code class="language-html line-numbers">
+      <p>12222</p>
+    </code></pre>
+
+
+<script src="./css/prism.js"></script>
+
+</body>
+</html>

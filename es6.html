@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+    function iterator(arr) {
+        let curindex = 0;
+        return {
+            next: ()=>{
+                return curindex< arr.length ? {value:arr[curindex++]} :  {done:true}
+            }
+        }
+    }
+    let it = iterator([1,2,3])
+    console.log(it.next())
+    console.log(it.next())
+    console.log(it.next())
+    console.log(it.next())
+</script>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .squash-and-stretch {
+            width: 900px;
+            height: 600px;
+            float: left;
+            margin: 0;
+            background: #e9b59f;
+            font-family: HelveticaNeue, Arial, Sans-serif;
+            color: #fff;
+        }
+        .one .shape {
+            animation: one 4s infinite ease-out;
+        }
+
+        .one .surface {
+            background: #000;
+            height: 10em;
+            width: 1em;
+            position: absolute;
+            top: calc(50% - 4em);
+            left: calc(50% + 10em);
+        }
+
+        @keyframes one {
+            0%, 15% {
+                opacity: 0;
+            }
+            15%, 25% {
+                transform: none;
+                animation-timing-function: cubic-bezier(1,-1.92,.95,.89);
+                width: 4em;
+                height: 4em;
+                top: calc(50% - 2em);
+                left: calc(50% - 2em);
+                opacity: 1;
+            }
+            35%, 45% {
+                transform: translateX(8em);
+                height: 6em;
+                width: 2em;
+                top: calc(50% - 3em);
+                animation-timing-function: linear;
+                opacity: 1;
+            }
+            70%, 100% {
+                transform: translateX(8em) translateY(5em);
+                height: 6em;
+                width: 2em;
+                top: calc(50% - 3em);
+                opacity: 0;
+            }
+        }
+
+        .principle {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .shape {
+            background: #2d97db;
+            border: 1em solid #fff;
+            width: 4em;
+            height: 4em;
+            position: absolute;
+            top: calc(50% - 2em);
+            left: calc(50% - 2em);
+        }
+
+
+    </style>
+    <style>
+        .three .shape.a {
+            transform: translateX(-12em);
+        }
+
+        .three .shape.c {
+            transform: translateX(12em);
+        }
+
+        .three .shape.b {
+            animation: three 5s infinite ease-out;
+            transform-origin: 0 6em;
+        }
+
+        .three .shape.a, .three .shape.c {
+            animation: threeb 5s infinite linear;
+        }
+
+        @keyframes three {
+            0%, 10% {
+                transform: none;
+                animation-timing-function: cubic-bezier(.57,-0.5,.43,1.53);
+            }
+            26%, 30% {
+                transform: rotateZ(-40deg);
+            }
+            32.5% {
+                transform: rotateZ(-38deg);
+            }
+            35% {
+                transform: rotateZ(-42deg);
+            }
+            37.5% {
+                transform: rotateZ(-38deg);
+            }
+            40% {
+                transform: rotateZ(-40deg);
+            }
+            42.5% {
+                transform: rotateZ(-38deg);
+            }
+            45% {
+                transform: rotateZ(-42deg);
+            }
+            47.5% {
+                transform: rotateZ(-38deg);
+                animation-timing-function: cubic-bezier(.57,-0.5,.43,1.53);
+            }
+            58%, 100% {
+                transform: none;
+            }
+        }
+
+        @keyframes threeb {
+            0%, 20% {
+                filter: none;
+            }
+            40%, 50% {
+                filter: blur(5px);
+            }
+            65%, 100% {
+                filter: none;
+            }
+        }
+
+        .principle {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        .shape {
+            background: #2d97db;
+            border: 1em solid #fff;
+            width: 4em;
+            height: 4em;
+            position: absolute;
+            top: calc(50% - 2em);
+            left: calc(50% - 2em);
+        }
+    </style>
+    <style>
+        .five .shape {
+            animation: five 4s infinite cubic-bezier(.64,-0.36,.1,1);
+            position: relative;
+            left: auto;
+            top: auto;
+        }
+
+        .five .shape-container {
+            animation: five-container 4s infinite cubic-bezier(.64,-0.36,.1,2);
+            position: absolute;
+            left: calc(50% - 4em);
+            top: calc(50% - 4em);
+        }
+
+        @keyframes five {
+            0%, 15% {
+                opacity: 0;
+                transform: translateX(-12em);
+            }
+            15%, 25% {
+                transform: translateX(-12em);
+                opacity: 1;
+            }
+            85%, 90% {
+                transform: translateX(12em);
+                opacity: 1;
+            }
+            100% {
+                transform: translateX(12em);
+                opacity: 0;
+            }
+        }
+
+        @keyframes five-container {
+            0%, 35% {
+                transform: none;
+            }
+            50%, 60% {
+                transform: skewX(20deg);
+            }
+            90%, 100% {
+                transform: none;
+            }
+        }
+        .principle {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        .shape {
+            background: #2d97db;
+            border: 1em solid #fff;
+            width: 4em;
+            height: 4em;
+            position: absolute;
+            top: calc(50% - 2em);
+            left: calc(50% - 2em);
+        }
+    </style>
+    <style>
+        .sevenb .shape.a {
+            animation: sevenb 3s infinite linear;
+            top: calc(50% - 2em);
+            left: calc(50% - 9em);
+            transform-origin: 10em 50%;
+        }
+        .sevenb .shape.b {
+            animation: sevenb 6s infinite linear reverse;
+            background-color: yellow;
+            width: 2em;
+            height: 2em;
+            left: calc(50% - 1em);
+            top: calc(50% - 1em);
+        }
+
+        @keyframes sevenb {
+            100% {
+                transform: rotateZ(360deg);
+            }
+        }
+
+        .principle {
+            width: 100%;
+            height: 100vh;
+            position: relative;
+        }
+
+        .shape {
+            background: #2d97db;
+            border: 1em solid #fff;
+            width: 4em;
+            height: 4em;
+            position: absolute;
+            top: calc(50% - 2em);
+            left: calc(50% - 2em);
+        }
+    </style>
+</head>
+<body>
+<div class="squash-and-stretch">
+    <article class="principle one">
+        <div class="shape"></div>
+        <div class="surface"></div>
+    </article>
+</div>
+<div class="squash-and-stretch">
+    <article class="principle three">
+        <div class="shape a"></div>
+        <div class="shape b"></div>
+        <div class="shape c"></div>
+    </article>
+</div>
+<div class="squash-and-stretch">
+    <article class="principle five">
+        <div class="shape-container">
+            <div class="shape"></div>
+        </div>
+    </article>
+</div>
+<div class="squash-and-stretch">
+    <article class="principle sevenb">
+        <div class="shape a"></div>
+        <div class="shape b"></div>
+    </article>
+</div>
+
+
+</body>
+<script>
+
+</script>
+</html>

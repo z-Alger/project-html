@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .father{
+            height: 400px;
+            width: 400px;
+            /* background: lightgoldenrodyellow; */
+        }
+        .content{
+            overflow: hidden;
+            height: 400px;
+            width: 400px;
+             background: lightcoral;
+            position: absolute;
+            z-index: 999;
+            clip: rect(0px, 400px, 400px, 200px);
+        }
+        .container{
+            height: 400px;
+            width: 400px;
+            background: lightblue;
+            position: absolute;
+            border-radius: 50%;
+            clip: rect(0px, 200px, 400px, 0);
+            transform: rotate(90deg);
+        }
+        .test {
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            border-width: 50px;
+            border-style: solid;
+            border-color: #e9b59f transparent transparent transparent;
+        }
+        .out {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background: #e9b59f;
+            position: relative;
+        }
+        .inner {
+            position: absolute;
+            top: 100px;
+            left: 100px;
+            background: #FFFFFf;
+            width: 100px;
+            height: 100px;
+            transform: rotate(30deg) skewY(-30deg);
+
+        }
+    </style>
+</head>
+<body>
+
+<!--<div class="content clearfix">-->
+<!--    <div class="box">-->
+<!--        <div class="box-item">-->
+<!--            <div class="box-tit">及时课就</div>-->
+<!--            <div class="box-line"></div>-->
+<!--        </div>-->
+<!--        <div class="box-item">-->
+<!--            <div class="box-tit">上课就</div>-->
+<!--            <div class="box-line"></div>-->
+<!--        </div>-->
+<!--        <div class="box-item">-->
+<!--            <div class="box-tit">及时的上课就</div>-->
+<!--            <div class="box-line"></div>-->
+<!--        </div>-->
+<!--        <div class="box-item">-->
+<!--            <div class="box-tit">及时</div>-->
+<!--            <div class="box-line"></div>-->
+<!--        </div>-->
+<!--        <div class="box-item">-->
+<!--            <div class="box-tit">及</div>-->
+<!--            <div class="box-line"></div>-->
+<!--        </div>-->
+<!--    </div>-->
+<!--</div>-->
+<div class="father">
+    <div class="content">
+        <div class="container"></div>
+    </div>
+</div>
+<div class="test"></div>
+<div class="out">
+    <div class="inner"></div>
+</div>
+</body>
+<script>
+    const promise1 = Promise.resolve("First");
+    const promise2 = Promise.resolve("Second");
+    const promise3 = Promise.reject("Third");
+    const promise4 = Promise.resolve("Fourth");
+    const runPromises = async () => {
+        const res1 = await Promise.all([promise1, promise2]);
+        const res2 = await Promise.all([promise3, promise4]);
+        console.log(res1, res2)
+        return [res1, res2];
+    };
+    runPromises()
+        .then((res) => console.log(res, 111))
+        .catch((err) => console.log(err, 3222));
+
+    const p = new Promise((resolve, reject) => reject('出错了'))
+
+    p.then(function (s) {
+        console.log(s,1111)
+    }, function (s) {
+        console.log(s,2333)
+    }).catch(err=>{
+        console.log(err,2222)
+    });
+</script>
+</html>

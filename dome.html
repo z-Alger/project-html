@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+</body>
+<script>
+    let industry_list = [
+        {
+            "parent_ind" : "电脑配件",// {电脑配件: { 显示器: {}},显示器: {}}
+            "name": "显示器"
+        },
+        {
+            "parent_ind" : "4GB",// {电脑配件: { 显示器: {}},4GB: { 2GB: {}},2GB: {},显示器: {}}
+            "name": "2GB"
+        },
+        {
+            "parent_ind" : "女装", // {电脑配件: { 显示器: {}},4GB: { 2GB: {}},女装: { 连衣裙: {}}}     res[parent_ind][name] = res[name]
+            "name" : "连衣裙"
+        },
+        {
+            "parent_ind" : "内存1", // 内存1:{} => 内存1:{8GB:{}}    {电脑配件: { 显示器: {}},4GB: { 2GB: {}},内存1:{8GB:{}}}
+            "name": "8GB"
+            //    !res[name] && (res[name] = {})   !res[parent_ind] && (res[parent_ind] = {})     res[parent_ind][name] = res[name]
+            //  {8GB:{}}                           {8GB:{},内存1:{}}                               {8GB:{},内存1:{8GB:{}}}
+        },
+        {
+            "parent_ind" : "8GB", // {8GB:{}} =>  {电脑配件: { 显示器: {}},女装: { 连衣裙: {}},8GB: { 4GB: {2GB: {}}}}  res[parent_ind] = {}   res[parent_ind][name] = res[name]
+            "name": "4GB"
+            //    !res[name] && (res[name] = {})   !res[parent_ind] && (res[parent_ind] = {})     res[parent_ind][name] = res[name]
+            //                                                                                    {8GB:{4GB:{2GB:{}}},内存1:{8GB:{}}}
+        },
+        {
+            "name": "女装" // {电脑配件: { 显示器: {}},女装: { 连衣裙: {}},8GB: { 4GB: {2GB: {}}}}       res[parent_ind][name] = res[name]
+        },
+        {
+            "parent_ind" : "洗衣机", // {电脑配件: { 显示器: {}},女装: { 连衣裙: {}},8GB: { 4GB: {2GB: {}}},洗衣机: { 进水口: {}}}       res[parent_ind][name] = res[name]
+            "name": "进水口"
+        },
+        {
+            "parent_ind" : "女装",// {电脑配件: { 显示器: {}},女装: { 连衣裙: {},半身裙:{}},8GB: { 4GB: {2GB: {}}},洗衣机: { 进水口: {}}}       res[parent_ind][name] = res[name]
+            "name" : "半身裙"
+        },
+        {
+            "name": "家电"
+        },
+        {
+            "parent_ind" : "内存",// 内存: {} => 内存{ 内存1:{8GB:{ 4GB: {2GB: {}}}} }
+            "name": "内存1"
+        },
+        {
+            "parent_ind" : "女装",
+            "name" : "A字裙"
+        },
+        {
+            "name": "数码"
+        },
+        {
+            "parent_ind" : "家电",
+            "name": "洗衣机"
+        },
+        {
+            "parent_ind" : "电脑配件",
+            "name": "CPU"
+        },
+        {
+            "parent_ind" : "数码",
+            "name": "电脑配件"
+        },
+        {
+            "parent_ind" : "电脑配件",
+            "name": "内存"
+        },
+        {
+            "parent_ind" : "内存",
+            "name": "内存2"
+        },
+    ]
+
+    function getRow(rowIndex) {
+        let resoult = [1]
+        for (let i = 0; i < rowIndex; i++) {
+            for (let j = 0; j < resoult.length; j++) {
+                resoult[j] = resoult[j] + (resoult[j + 1]? resoult[j + 1]: 0)
+            }
+            resoult.unshift(1)
+        }
+        return resoult;
+    }
+    function getRow1(rowIndex) {
+        let returnOld = [1]
+        let data = [1]
+        for(let j = 0; j < rowIndex; j++) {
+            returnOld = [1]
+            for(let i = 0; i < data.length;  i++) {
+                if(data[i + 1]) {
+                    returnOld.push(data[i] + data[i + 1])
+                }else {
+                    returnOld.push(1)
+                }
+            }
+            data = returnOld
+        }
+        return returnOld
+    }
+    console.log(getRow1(4))
+    var romanToInt = function(s) {
+        let obj = {I: 1, V: 5, X: 10, L: 50, C: 100, D: 500, M: 1000, IV: 4, IX: 9, XL: 40, XC: 90, CD: 400, CM: 900}
+        let num = 0
+        for (let i = 0; i < s.length; i++){
+            if(['IV', 'IX', 'XL', 'XC', 'CD', 'CM'].includes(s[i] + s[i + 1])){
+                num += obj[s[i] + s[i + 1]]
+                i++
+            }else {
+                num += obj[s[i]]
+            }
+        }
+        return num
+
+    };
+    console.log(romanToInt('MCMXCIV'))
+
+    window.onload = function () {
+        console.log(111111)
+        document.documentElement.requestFullscreen();
+    }
+
+
+</script>
+</html>

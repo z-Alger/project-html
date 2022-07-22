@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <style id='test'>
+    html,body{
+      width: 100%;
+      height: 100%;
+      --theme-color: red;
+      --theme-color1: blue;
+      --theme-color2: yellow;
+    }
+  </style>
+  <style>
+    #wrap {
+      width: 100%;
+      height: 100%;
+      background: var(--theme-color2);
+    }
+    p {
+      border-top: 5px solid var(--theme-color);
+    }
+    .p1 {
+      border-top: 10px solid var(--theme-color1);
+    }
+    .p2 {
+      border-top: 10px solid var(--theme-color2);
+    }
+  </style>
+   <script type="text/javascript">
+    window.MSInputMethodContext && document.documentMode && document.write('<script id="scriptTest" src="https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.1.0/ie11CustomProperties.min.js"><\/script>');
+  </script>
+  <script>
+/**
+ *  var headEl = document.getElementsByTagName('head')[0];
+ *  if (window.MSInputMethodContext && document.documentMode) {
+ *    const scriptEl = document.createElement('script');
+      scriptEl.src = 'https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.1.0/ie11CustomProperties.min.js';
+      headEl.appendChild(scriptEl);
+    }
+ *
+ *
+ *
+ * */
+    function change() {
+      var styleEl = document.getElementById('test');
+      var headEl = document.getElementsByTagName('head')[0];
+      console.log(styleEl,11)
+      styleEl.innerHTML = "html,body {width:100%;height:100%;--theme-color:#ff0000;--theme-color1:blue;--theme-color2:yellow;}";
+      if(window.MSInputMethodContext && document.documentMode) {
+        let scriptEl = document.createElement('script');
+        scriptEl.src = 'https://cdn.jsdelivr.net/gh/nuxodin/ie11CustomProperties@4.1.0/ie11CustomProperties.min.js';
+        headEl.appendChild(scriptEl);
+      }
+      var dom = document.createElement('p').setAttribute('class','p2')
+      dom.appendChild(dom)
+    }
+    </script>
+</head>
+<body>
+  <div id="wrap" onclick="change()">
+
+  </div>
+<p class="p1">hsjdslkkdls;dl;lksdkjlkjnsfjhgvvlijiegjr</p>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "name": "mycli",
+  "version": "1.0.0",
+  "description": "初始化项目",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "myCli": "index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "inquirer": "^8.2.4"
+  },
+  "dependencies": {
+    "commander": "^9.2.0",
+    "org": "^0.2.0"
+  }
+}

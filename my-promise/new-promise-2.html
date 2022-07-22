@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+    class MyPromise {
+        // 定义三种状态 pending：初始状态 fulfilled：操作成功 rejected：操作失败
+        static pending = 'pending';
+        static fulfilled = 'fulfilled';
+        static rejected = 'rejected';
+        constructor(executor){
+            this.status = MyPromise.pending; // 初始化状态为pending
+            this.value = null   //fulfilled的返回值
+            this.reason = null   //rejected的返回值
+            this.collbacks = []   //定义异步队列
+            // 立即执行函数
+            try {
+                // 这里绑定this的指向，是为了防止执行时this的改变指向
+                executor(this._resolve.bind(this),this._reject.bind(this))
+            }catch (err){
+                this._reject.call(this, err)
+            }
+
+
+        }
+
+        // 将现有对象转为 Promise 对象 该实例的状态为rejected
+        static reject(value) {
+            if(value instanceof MyPromise || ((typeof value === 'object') && 'then' in value)) {
+                return value
+            }
+            return  new MyPromise((resolve, reject) => reject(value))
+        }
+
+        // 将现有对象转为 Promise 对象 该实例的状态为fulfilled
+        static resolve(value) {
+            if(value instanceof MyPromise || ((typeof value === 'object') && 'then' in value)) {
+                return value
+            }
+            return  new MyPromise((resolve) => resolve(value))
+        }
+
+        // all 返回一个promise
+        static all(iterable) {
+            return new MyPromise((resolve, reject) => {
+                const res = [];
+                let num = 0,
+                hasErr = false; // 是否有异常
+                // 伪数组对象或可迭代对象转换成数组
+                Array.from(iterable).forEach((item, index) => {
+                    MyPromise.resolve(item).then(data => {
+                        res[index] = data;
+                        num++;
+                        if(num === iterable.length) {
+                            resolve(res)
+                        }
+                    }).catch(err => {
+                        !hasErr && reject(err)
+                        hasErr = true
+                    })
+                })
+            })
+        }
+
+        // race
+        static race(iterable) {
+            return new MyPromise((resolve, reject) => {
+                let hasErr = false;
+                Array.from(iterable).forEach((item, index) => {
+                    MyPromise.resolve(item).then(data => {
+                        !hasErr && resolve(data)
+                        hasErr = true
+                    }).catch(err => {
+                        !hasErr && reject(err)
+                        hasErr = true
+                    })
+                })
+            })
+        }
+
+        // any
+        static any(iterable) {
+            return new MyPromise((resolve, reject) => {
+                const res = [];
+                let num = 0,
+                hasErr = false;
+                Array.from(iterable).forEach((item, index) => {
+                    MyPromise.resolve(item).then(data =>{
+                        !hasErr && resolve(data)
+                        hasErr = true
+                    }, err => {
+                        res[index] = err;
+                        num++;
+                        if(num === iterable.length) {
+                            reject(res)
+                        }
+                    })
+                })
+            })
+        }
+
+        // 成功的回调函数
+        _resolve(data){
+            // 修改当前状态为成功
+            if(this.status === 'pending') this.status = MyPromise.fulfilled
+            this.value = data
+            this.collbacks.forEach((cb)=>{
+                cb.onFulfilled(data)
+            })
+        }
+        // 失败的回调函数
+        _reject(reason){
+            // 修改当前状态为失败
+            if(this.status === 'pending') this.status = MyPromise.rejected
+            this.reason = reason
+            this.collbacks.forEach((cb)=>{
+                cb.onRejected(reason)
+            })
+        }
+        // 链式调用
+        then(onFulfilled, onRejected){
+            onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : v => v
+            onRejected = typeof onRejected === 'function' ? onRejected : err =>{ throw err }
+            const self = this
+            // 当状态已经变成fulfilled 成功时
+            if (this.status === 'fulfilled') {
+                // 返回一个新的promise对象
+                return  new MyPromise((resolve, reject)=>{
+                    try {
+                        let x = onFulfilled(self.value)
+                        // 链式调用的重点
+                        x instanceof MyPromise ? x.then(resolve, reject) : resolve(x)
+                    }catch (err){
+                        reject(err)
+                    }
+                })
+            }
+            // 当状态已经变成rejected 失败时
+            if (this.status === 'rejected') {
+                // 返回一个新的promise对象
+                return  new MyPromise((resolve, reject)=>{
+                    try {
+                        let x = onRejected(self.reason)
+                        // 链式调用的重点
+                        x instanceof MyPromise ? x.then(resolve, reject) : resolve(x)
+                    }catch (err){
+                        reject(err)
+                    }
+                })
+            }
+            // 状态pending时 实现订阅的操作
+            if (this.status === 'pending') {
+                return  new MyPromise((resolve, reject)=>{
+                    // 放入异步队列里
+                    self.collbacks.push({
+                        onFulfilled: ()=>{
+                            let x = onFulfilled(self.value)
+                            x instanceof MyPromise ? x.then(resolve, reject) : resolve(x)
+                        },
+                        onRejected: ()=>{
+                            let x = onRejected(self.reason)
+                            x instanceof MyPromise ? x.then(resolve, reject) : resolve(x)
+                        }
+                    })
+                })
+            }
+
+        }
+
+        // catch
+        catch(onReject){
+            return this.then(null, onReject)
+        }
+
+        // finally
+        finally(onFinally){
+            return this.then(onFinally, onFinally)
+            // return this.then(data => {
+            //     return Promise.resolve(onFinally()).then(()=>data)
+            // }, err=>{
+            //     return Promise.resolve(onFinally()).then(()=>{
+            //         throw err
+            //     })
+            // })
+        }
+    }
+
+
+
+
+
+    let promise = new MyPromise(function(resolve, reject) {
+    // let promise = new Promise(function(resolve, reject) {
+    //     resolve('哦耶！成功了！');
+        throw new Error('报错了！')
+        // reject('哎呀，不好意思了，失败了');
+    });
+
+    promise.then(function(data) {
+        console.log('resolved', data);
+        return data + '这是链式调用';
+    },(data)=>{
+        console.log('reject', data);
+        return new MyPromise(resolve => {
+            resolve(data + '这是链式调用')
+        })
+    }).then((data)=>{
+        console.log('resolved2', data);
+        return {
+            data: data,
+            info: 'resolved2' + data
+        };
+    }).then((data)=>{
+        console.log('resolved3', data);
+        return { ...data, info3: '这是链式调用3'};
+    });
+
+
+    // finally
+    // promise.then(function(data) {
+    //     console.log('resolved', data);
+    //     return data + '这是链式调用';
+    // },(data)=>{
+    //     console.log('reject', data);
+    //     return new MyPromise(resolve => {
+    //         resolve(data + '这是链式调用')
+    //     })
+    // }).then((data)=>{
+    //     console.log('resolved2', data);
+    //     return {
+    //         data: data,
+    //         info: 'resolved2' + data
+    //     };
+    // }).then((data)=>{
+    //     console.log('resolved3', data);
+    //     return { ...data, info3: '这是链式调用3'};
+    // }).finally((data)=>{
+    //     console.log('finally', data);
+    // });
+
+
+
+    // catch finally
+    // promise.then(function(data) {
+    //     console.log('resolved', data);
+    //     return data + '这是链式调用';
+    // }).then((data)=>{
+    //     console.log('resolved2', data);
+    //     return {
+    //         data: data,
+    //         info: 'resolved2' + data
+    //     };
+    // }).then((data)=>{
+    //     console.log('resolved3', data);
+    //     return { ...data, info3: '这是链式调用3'};
+    // }).catch((err)=>{
+    //     console.log('catch', err);
+    // }).finally((data)=>{
+    //     console.log('finally', data);
+    // });
+
+
+
+
+    // resolve reject
+    // MyPromise.resolve(1).then((data)=>{
+    //     console.log('resolve', data)
+    // })
+    // MyPromise.resolve({then:(resolve,reject)=>{
+    //         resolve(42);
+    //     }}).then((data)=>{
+    //     console.log('resolve', data)
+    // })
+    // MyPromise.reject(1).then((data)=>{
+    //     console.log('resolve', data)
+    // },(data)=>{
+    //     console.log('reject', data)
+    // })
+
+
+
+
+    const p1 = new MyPromise((resolve, reject) => {
+        setTimeout(()=>{
+            resolve(1);
+        })
+    })
+    const p2 = new MyPromise((resolve, reject) => {
+        resolve(2);
+    })
+    const p3 = new MyPromise((resolve, reject) => {
+        // resolve(3);
+        reject(3);
+        // throw new Error('报错了');
+    })
+    const p4 = new MyPromise((resolve, reject) => {
+        // resolve(4);
+        reject(4);
+        // throw new Error('报错了');
+    })
+    // all
+    // MyPromise.all([p1, p2, p3, p4]).then(data=>{
+    //     console.log('all-resolve', data)
+    // }).catch((err)=>{
+    //     console.log('all-catch', err);
+    // })
+
+    // any
+    // Promise.any([p1, p2]).then(data=>{
+    // MyPromise.any([p1, p2]).then(data=>{
+    //     console.log('any-resolve', data)
+    // }).catch((err)=>{
+    //     console.log('any-catch', err);
+    // })
+
+    // race
+    // Promise.any([p1, p3]).then(data=>{
+    // MyPromise.race([p1, p3]).then(data=>{
+    //     console.log('race-resolve', data)
+    // }).catch((err)=>{
+    //     console.log('race-catch', err);
+    // });
+
+</script>
+</html>

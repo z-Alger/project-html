@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+   const sharePropertDefine = {
+       enumerable: true,
+       configurable: true,
+       get: () => {},
+       set: () => {}
+   }
+   function proxy (target, source, key) {
+       sharePropertDefine.get = function () {
+           return target[source][key]
+       }
+       sharePropertDefine.set = function (val) {
+           target[source][key] = val
+       }
+       Object.defineProperty(target, key, sharePropertDefine)
+   }
+   function Vue (data) {
+       this._data = data
+       Object.keys(this._data).forEach((key)=>{
+           proxy(this, '_data', key)
+       })
+   }
+
+   const aaa = new Vue({a:1,b:2})
+   console.log(aaa.a)
+   aaa.a = 3
+   aaa.b = 4
+   console.log(aaa.a)
+</script>
+</html>

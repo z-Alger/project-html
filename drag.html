@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="div_drag" draggable="true" ondragstart="dragstart(event);">可拖曳元素</div>
+<div id="div_drop" style="height: 200px" ondrop="drop(event)" ondragover="allowDrop(event)">拖曳放置区</div>
+</body>
+<script>
+    function dragstart(event) {
+        var itemData ={id:1,name:"demo"};
+        event.dataTransfer.setData("text", JSON.stringify(itemData));
+    }
+
+    function allowDrop(event) {
+        event.preventDefault();
+    }
+
+    function drop(event) {
+        event.preventDefault();
+        console.log(event.dataTransfer.getData("text"));
+        // TODO
+    }
+</script>
+</html>

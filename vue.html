@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 先引入 Vue -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+    <!-- 引入 http-vue-loader -->
+    <script src="https://unpkg.com/http-vue-loader"></script>
+    <!-- 引入element 的组件库-->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+</head>
+<body>
+<div id="app">
+    <el-date-picker
+            v-model="formData.buildTime"
+            class="el-select"
+            type="year"
+            placeholder="选择建设时间"
+    >
+    </el-date-picker>
+</div>
+</body>
+<script>
+    new Vue({
+        el:'#app',
+        data:{
+            formData: {
+                buildTime: '2021'
+            }
+        },
+        components: {
+        }
+    });
+</script>
+</html>

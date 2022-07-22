@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<div id="app">
+    丁云视图-1 <span class="box-1"></span><br>
+    丁云视图-2 <span class="box-2"></span>
+</div>
+
+</body>
+<script>
+    let Dep = {
+        clientList: {},
+        // 订阅
+        listen: function (key,fn) {
+            (this.clientList[key] || (this.clientList[key] = [])).push(fn)
+        },
+        // 发布
+        trigger: function (){
+            // 将类数组转换成数组
+            let key = Array.prototype.shift.call(arguments),   // Array.prototype.shift.call(arguments)
+            fns = this.clientList[key]
+            if(!fns || fns.length === 0) {
+                return
+            }
+            for (let i = 0, fn; fn = fns[i++];){
+                fn.apply(this, arguments)
+            }
+        }
+    }
+    let dataHijack = function ({data, tag, datakey, selector}) {
+        let value = '',
+        el = document.querySelector(selector)
+        Object.defineProperty(data, datakey, {
+            get: function () {
+                console.log('取值')
+                return value
+            },
+            set: function (val) {
+                 value = val;
+                 // 发布
+                 Dep.trigger(tag, val)
+             }
+        })
+        Dep.listen(tag, function (text){
+            el.innerHTML = text
+        })
+    }
+
+
+    let dataApp = {}
+    dataHijack({
+        data: dataApp,
+        tag: 'view-1',
+        datakey: 'one',
+        selector: '.box-1'
+    })
+    dataHijack({
+        data: dataApp,
+        tag: 'view-2',
+        datakey: 'two',
+        selector: '.box-2'
+    })
+    // dataApp.one = '朱显明'
+    dataApp.two = '小红'
+
+</script>
+</html>

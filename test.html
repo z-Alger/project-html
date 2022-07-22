@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+
+        input:-ms-input-placeholder {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+<input type="text" placeholder="3333333">
+</body>
+<script type="text/javascript" src="./js/data.js"></script>
+<script>
+    let industry_list = [
+        {
+            "parent_ind" : "电脑配件",// {电脑配件: { 显示器: {}},显示器: {}}
+            "name": "显示器"
+        },
+        {
+            "parent_ind" : "4GB",// {电脑配件: { 显示器: {}},4GB: { 2GB: {}},2GB: {},显示器: {}}
+            "name": "2GB"
+        },
+        {
+            "parent_ind" : "女装", // {电脑配件: { 显示器: {}},4GB: { 2GB: {}},女装: { 连衣裙: {}}}     res[parent_ind][name] = res[name]
+            "name" : "连衣裙"
+        },
+        {
+            "parent_ind" : "内存1", // 内存1:{} => 内存1:{8GB:{}}    {电脑配件: { 显示器: {}},4GB: { 2GB: {}},内存1:{8GB:{}}}
+            "name": "8GB"
+            //    !res[name] && (res[name] = {})   !res[parent_ind] && (res[parent_ind] = {})     res[parent_ind][name] = res[name]
+            //  {8GB:{}}                           {8GB:{},内存1:{}}                               {8GB:{},内存1:{8GB:{}}}
+        },
+        {
+            "parent_ind" : "8GB", // {8GB:{}} =>  {电脑配件: { 显示器: {}},女装: { 连衣裙: {}},8GB: { 4GB: {2GB: {}}}}  res[parent_ind] = {}   res[parent_ind][name] = res[name]
+            "name": "4GB"
+            //    !res[name] && (res[name] = {})   !res[parent_ind] && (res[parent_ind] = {})     res[parent_ind][name] = res[name]
+            //                                                                                    {8GB:{4GB:{2GB:{}}},内存1:{8GB:{}}}
+        },
+        {
+            "name": "女装" // {电脑配件: { 显示器: {}},女装: { 连衣裙: {}},8GB: { 4GB: {2GB: {}}}}       res[parent_ind][name] = res[name]
+        },
+        {
+            "parent_ind" : "洗衣机", // {电脑配件: { 显示器: {}},女装: { 连衣裙: {}},8GB: { 4GB: {2GB: {}}},洗衣机: { 进水口: {}}}       res[parent_ind][name] = res[name]
+            "name": "进水口"
+        },
+        {
+            "parent_ind" : "女装",// {电脑配件: { 显示器: {}},女装: { 连衣裙: {},半身裙:{}},8GB: { 4GB: {2GB: {}}},洗衣机: { 进水口: {}}}       res[parent_ind][name] = res[name]
+            "name" : "半身裙"
+        },
+        {
+            "name": "家电"
+        },
+        {
+            "parent_ind" : "内存",// 内存: {} => 内存{ 内存1:{8GB:{ 4GB: {2GB: {}}}} }
+            "name": "内存1"
+        },
+        {
+            "parent_ind" : "女装",
+            "name" : "A字裙"
+        },
+        {
+            "name": "数码"
+        },
+        {
+            "parent_ind" : "家电",
+            "name": "洗衣机"
+        },
+        {
+            "parent_ind" : "电脑配件",
+            "name": "CPU"
+        },
+        {
+            "parent_ind" : "数码",
+            "name": "电脑配件"
+        },
+        {
+            "parent_ind" : "电脑配件",
+            "name": "内存"
+        },
+        {
+            "parent_ind" : "内存",
+            "name": "内存2"
+        },
+    ]
+/*
+* 为了取用方便，我们希望可以将其转换为树状格式，例如：
+* {
+*  "数码": {
+*    "电脑配件": {
+*        "内存" : {}
+*     }
+*  },
+*  "女装" : {
+*     "连衣裙": {},
+*    "半身裙": {},
+*    "A字裙": {}
+*  }
+* }
+* 实现一个方法完成这个转换
+*function convert_format(data)
+* */
+    function convert_format(data) {
+        const _data = {}
+        const delProperty = ()=>{
+            data.map((item,index)=>{
+                if(item.parent_ind && Object.hasOwnProperty.call(_data, item.name)){
+                    delete _data[item.name]
+                }
+            })
+            return _data
+        }
+        const getDatas = (data)=>{
+            data.map((item,index)=>{
+                if(item.parent_ind && Object.hasOwnProperty.call(_data, item.name)){
+                    _data[item.parent_ind][item.name] = _data[item.name]
+                }
+            })
+            return delProperty()
+        }
+        data.map((item,index)=>{
+            if(item.parent_ind){
+                _data[item.parent_ind] = Object.assign(_data[item.parent_ind] || {}, {
+                    [item.name]: {}
+                })
+            }
+        })
+        // console.log(_data)
+        return getDatas(data)
+    }
+    function convert_format1(data) {
+        const res = {}
+        for(let i = 0; i < data.length; i ++) {
+            const {parent_ind, name} = data[i]
+            if (!parent_ind) {
+                !res[name] && (res[name] = {})
+            } else {
+                !res[name] && (res[name] = {})
+                res[name].isChild = true
+                !res[parent_ind] && (res[parent_ind] = {})
+                res[parent_ind][name] = res[name]
+            }
+        }
+        Object.keys(res).forEach(key => {
+            if (res[key].isChild === true) {
+                delete res[key].isChild
+                delete res[key]
+            }
+        })
+        return res
+    }
+    // console.log(convert_format1(industry_list));
+    // 深度克隆
+    function deepClone(obj) {
+        let cope = Object.create(Object.getPrototypeOf(obj))
+        let propsName = Object.getOwnPropertyNames(obj)
+        propsName.forEach((items)=>{
+            let item = Object.getOwnPropertyDescriptors(obj, items)
+            Object.defineProperty(cope, items, item)
+        })
+        return cope
+    }
+    function deepClone1(obj) {
+        if(obj === null) return null
+        if(typeof obj !== 'object') return obj;
+        if(obj.constructor===Date) return new Date(obj);
+        if(obj.constructor === RegExp) return new RegExp(obj);
+        var newObj = new obj.constructor ();  //保持继承链
+        for (var key in obj) {
+            if (obj.hasOwnProperty(key)) {   //不遍历其原型链上的属性
+                var val = obj[key];
+                newObj[key] = typeof val === 'object' ? arguments.callee(val) : val; // 使用arguments.callee解除与函数名的耦合
+            }
+        }
+        return newObj;
+    }
+
+    // 获取数据类型
+    function getType(obj) {
+        const str = Object.prototype.toString.call(obj);
+        const map = {
+            '[object Boolean]': 'boolean',
+            '[object Number]': 'number',
+            '[object String]': 'string',
+            '[object Function]': 'function',
+            '[object Array]': 'array',
+            '[object Date]': 'date',
+            '[object RegExp]': 'regExp',
+            '[object Undefined]': 'undefined',
+            '[object Null]': 'null',
+            '[object Object]': 'object'
+        };
+        return map[str];
+    }
+    function bindThis(f, oTarget) {
+        return function(...args){//返回一个函数--封装；。。。arg用于将数据都接收到数组args中
+            oTarget.f=f;//利用对象的方法中的this指向对象原理，将f中的this指向对象
+            return oTarget.f(...args);//函数的最终结果返回函数指向结果。。。args将参数展开传入
+
+        }
+    }
+    // 截取url参数
+    function getUrlParam(sUrl, sKey) {
+        let propers = sUrl.split('?')[1].split('#')[0].split('&')
+        let obj = {}
+        propers.forEach((item)=>{
+            if(item) {
+                let keyValue = item.split('=')
+                if(Object.hasOwnProperty.call(obj, keyValue[0])){
+                    if(typeof obj[keyValue[0]] === 'string') {
+                        obj[keyValue[0]] = [obj[keyValue[0]]]
+                    }
+                    obj[keyValue[0]].push(keyValue[1])
+
+                }else {
+                    obj[keyValue[0]] = keyValue[1]
+                }
+
+            }
+        })
+        return sKey ? obj[sKey] || '' : obj
+    }
+    // function () { var a = getUrlParam('http://www.nowcoder.com?key=1&key=2&key=3&key=4&test=4#hehe', 'key'); return a.join('') === '1234'; }
+    // console.log(getUrlParam('http://www.nowcoder.com/#/index?key=1&key=2&key=3&key=4&test=4&test1=0#hehe', 'test1'));
+    function addTwoNumbers(l1, l2) {
+        let data = []
+        let isAdd = 0
+        let maxLength = l1.length > l2.length ? l1.length : l2.length
+        for(let i = 0; i < maxLength; i++){
+           let num1 = l1[i] ? l1[i] : 0
+           let num2 = l2[i] ? l2[i] : 0
+            let total = num1 + num2 + isAdd
+           if(total > 9) {
+               isAdd = 1
+               data.push(total - 10)
+           }else {
+               isAdd = 0
+               data.push(total)
+           }
+        }
+        if(isAdd)data.push(1)
+        return data
+    }
+    var lengthOfLongestSubstring1 = function(s) {
+       if(!s) return 0;
+       let res = 1;
+       for (let i = 0; i < s.length; i++){
+           let set = new Set()
+           let r = i
+           while (s[r] && !set.has(s[r]) ) {
+               set.add(s[r])
+               r++
+           }
+           res = Math.max(res, set.size)
+       }
+       return res
+    };
+    // Math ads去正 ceil向上取整 floor向下取整 random round 四舍五入最近的整数
+    var lengthOfLongestSubstring = function(nums1, nums2) {
+        let arr = nums1.concat(nums2).sort((a,b)=> a-b)
+        let num  = Math.ceil(arr.length / 2)
+        return arr.length % 2 ? arr[num - 1] : (arr[num] + arr[num - 1]) /2
+    };
+    // console.log(lengthOfLongestSubstring([1,3],[2,4]));
+
+
+
+
+    // 2) 打印结果
+    // 'hello, whr' -(等待3s)--> 'whr eat apple' -(等待5s)--> 'whr eat durian'
+
+    // 3) 以下是代码实现
+    class People {
+        constructor(name) {
+            this.name = name;
+            this.sayHello();
+            this.queue = Promise.resolve();
+        }
+        sayHello() {
+            console.log(`hello, ${this.name}`);
+        }
+        sleep(time) {
+            this.queue = this.queue.then(() => {
+                return new Promise(res => {
+                    setTimeout(() => {
+                        res();
+                    }, time * 1000)
+                })
+            })
+            return this;
+        }
+        eat(food) {
+            this.queue = this.queue.then(() => {
+                console.log(`${this.name} eat ${food}`);
+            })
+            return this;
+        }
+    }
+    class LeayPeoper {
+        constructor(name) {
+            this.name = name;
+            this.sayName()
+            this.queue = Promise.resolve()
+        };
+        sayName() {
+            console.log('hollow ' + this.name)
+        };
+        sleep(time) {
+            this.queue = this.queue.then(()=>{
+                return new Promise((resolve)=>{
+                    setTimeout((time)=>{
+                        resolve()
+                    }, time * 1000)
+                })
+            })
+            console.log(this.queue, 22222)
+            return this
+        };
+        eat(food){
+            this.queue = this.queue.then(()=> {
+                console.log(this.name + 'eat' + food)
+            })
+            console.log(this.queue, 1111)
+            return this
+        }
+
+    }
+    // 懒汉 类
+    class LazyManClass {
+        constructor (name) {
+            this.name = name
+            this.queue = [] // 队列
+            console.log(`Hi! This is ${name}`)
+
+            // 延迟调度
+            setTimeout(() => {
+                console.log(this.queue)
+                this.next()
+            },0)
+        }
+
+        // 调度方法
+        next () {
+            const fnc = this.queue.shift()
+            fnc && fnc()
+        }
+
+        /**
+         * 注册函数方法
+         * @param {*} fn 要注册的函数
+         * @param {*} isFirst 是否注册在队列最前
+         */
+        register (fn, isFirst) {
+            if (isFirst) {
+                this.queue.unshift(fn)
+            } else {
+                this.queue.push(fn)
+            }
+        }
+
+        // 吃
+        eat (food) {
+            const _eat = () => {
+                console.log(`Eat ${food}~`)
+                this.next()
+            }
+            this.register(_eat)
+            return this
+        }
+
+        // 睡在最前面
+        sleepFirst (s) {
+            return this.sleep(s, true)
+        }
+
+        // 睡觉
+        sleep (s, isFirst=false) {
+            const timeout = s * 1000
+            const _sleep = () => {
+                console.log(`Wake up after ${s}`)
+                setTimeout(() => {
+                    this.next()
+                }, timeout)
+            }
+            this.register(_sleep, isFirst)
+            return this
+        }
+    }
+
+    // 懒汉 返回一个懒汉实例
+    function LazyMan (name) {
+        return new LazyManClass(name)
+    }
+    // 1) 调用方式
+    // console.log(LazyMan('whr').sleep(3).eat('apple').sleep(5).eat('durian'))
+    function twoSum (nums, target) {
+        let arr = []
+        nums.forEach((item,index)=>{
+            for (let j = index + 1; j < nums.length; j++) {
+                if(item + nums[j] === target && index !== j){
+                    arr.push(index)
+                    arr.push(j)
+                }
+            }
+        })
+        return arr
+    }
+    // console.log(twoSum([3,3],6))
+    // 社区解法，动态规划递推公式 dp[x|y]=Math.min(dp[x|y],dp[x]+dp[y])
+    var smallestSufficientTeam=function(req_skills,people){
+        const len=req_skills.length;
+        let biNum=1<<len;
+
+        const skills=new Map();
+
+        // dp数组记录由[0,bNum]中每个数字
+        const dp=new Array(biNum).fill(-1)
+
+        const team=[]
+
+        // skills哈希表，键为技能字符串，值为该技能在req_skills的索引
+        for(let i = 0;i < len; ++i){
+            skills[req_skills[i]]=i;
+        }
+        dp[0] = 0;
+        team[0] =[];
+
+        for(let i = 0;i < people.length; ++i){
+            let idx = 0;
+            // 计算当前备选人员的技能，将技能数组转换为二进制数字
+            // 注意people[i]表示第i个人的技能数组，其数组中每个技能需要找到在req_skills对应位置
+            // 如果人员i的技能不满足req_skills，则idx为0
+            for(const s of people[i]){
+                if(skills[s]!==undefined){
+                    idx = idx|(1<<skills[s]);
+                }
+            }
+
+
+            // 精华部分说明
+            // j其实用于辅助idx，j|idx可以判定由于idx的引入是否新增"1"
+            // 当j|idx的数值新增1，则需要进一步已经加入备选集中是否存在人员技能冗余
+            for(let j = 0;j <biNum; ++j){
+                if(dp[j] >= 0){
+                    let x = j|idx;
+                    if((dp[x] === -1) || (dp[x] > dp[j] + 1)){
+                        dp[x] = dp[j] + 1;
+                        team[x] = team[j].slice(0);
+                        team[x].push(i);
+                    }
+                }
+            }
+        }
+        return team[biNum-1];
+    }
+    console.log(smallestSufficientTeam(["algorithms","math","java","reactjs","csharp","aws"],[["algorithms","math","java"],["algorithms","math","reactjs"],["java","csharp","aws"],["reactjs","csharp"],["csharp","math"],["aws","java"]]))
+    let A = [1.2,2,3,4]
+
+    // console.log(Array.from(A))
+    // console.log(Array.prototype.slice.apply(A))
+    // console.log(...A)
+    // console.log([...A])
+    // import { datas, datasCope } from './js/data'
+    function areas() {
+        // var datas = datas
+        // var datasCope = datasCope
+        // console.log(datas, datasCope)
+        var _datas = []
+        const getDatas = (datas, parent) => {
+            datas.map(item => {
+                _datas.push({
+                    name: item.name,
+                    value: item.id,
+                    parent: !parent ? 0 : parent
+                })
+                if (item.children) {
+                    getDatas(item.children, item.id)
+                }
+            })
+            return datasCope
+        }
+        return getDatas(datas)
+    }
+
+    // console.log(areas());
+
+    function longestPalindrome(){
+        if (s.length<2){
+            return s
+        }
+        let res = ''
+        for (let i = 0; i < s.length; i++) {
+            // 回文子串长度是奇数
+            helper(i, i)
+            // 回文子串长度是偶数
+            helper(i, i + 1)
+        }
+
+        function helper(m, n) {
+            while (m >= 0 && n < s.length && s[m] == s[n]) {
+                m--
+                n++
+            }
+            // 注意此处m,n的值循环完后  是恰好不满足循环条件的时刻
+            // 此时m到n的距离为n-m+1，但是mn两个边界不能取 所以应该取m+1到n-1的区间  长度是n-m-1
+            if (n - m - 1 > res.length) {
+                // slice也要取[m+1,n-1]这个区间
+                res = s.slice(m + 1, n)
+            }
+        }
+        return res
+    }
+    // 数组 join() unshift() slice() splice()fruits.splice(2, 0, "Lemon", "Kiwi"); concat()
+
+
+    /**
+     * 斐波那契数列函数 fbnqhs
+     * */
+    function fbnqhs(n) {
+        if(n >= 2) {
+            return fbnqhs(n-1) + fbnqhs(n-2)
+        }else {
+            return n;
+        }
+    }
+
+    console.log(fbnqhs(7));
+
+    /**
+     *
+     * reduce实现map方法
+     * context: 回调函数的作用域，箭头函数无效
+     * this：谁调用指向谁，当前数组
+     * */
+    Array.prototype.myReduceMap = function (fn, context) {
+        let arr = Array.prototype.slice.call(this)
+         return arr.reduce((pre, cur, index)=>{
+             return [...pre, fn.call(context, cur, index, this)]
+         }, [])
+    }
+    // const map = {}
+    // const arr = [1,2,3,4,5]
+    // arr.myReduceMap((item,index) => {
+    //     console.log(this,' console.log(this);');
+    // }, map)
+
+    /**
+     * class: 实现es6的class语法
+     * */
+    function myClass (subType, superType) {
+        console.log(subType, superType)
+        subType.prototype = Object.create(superType.prototype, {
+            constructor: {
+                configurable: true,
+                enumerable: false,
+                writable: true,
+                value: subType
+            }
+        })
+        // Object.setPrototypeOf(subType, superType)
+    }
+    const a = {}, b ={a:1}
+    myClass(a, b)
+    // console.log();
+    
+
+</script>
+
+</html>

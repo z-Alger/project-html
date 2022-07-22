@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+</body>
+<script>
+    class MyPromise {
+        // 定义三种状态 pending：初始状态 fulfilled：操作成功 rejected：操作失败
+        static pending = 'pending';
+        static fulfilled = 'fulfilled';
+        static rejected = 'rejected';
+        constructor(executor){
+            this.status = MyPromise.pending; // 初始化状态为pending
+            this.value = null   //fulfilled的返回值
+            this.reason = null   //rejected的返回值
+            this.collbacks = []   //定义异步队列
+            // 立即执行
+            try {
+                // 这里绑定this的指向，是为了防止执行时this的改变指向
+                executor(this._resolve.bind(this),this._reject.bind(this))
+            }catch (err){
+                this._reject.call(this, err)
+            }
+        }
+        // 成功的回调函数
+        _resolve(data){
+            // 修改当前状态为成功
+            if(this.status === 'pending') this.status = MyPromise.fulfilled
+            this.value = data
+            this.collbacks.forEach((cb)=>{
+                cb.onFulfilled(data)
+            })
+        }
+        // 失败的回调函数
+        _reject(reason){
+            // 修改当前状态为失败
+            if(this.status === 'pending') this.status = MyPromise.rejected
+            this.reason = reason
+            this.collbacks.forEach((cb)=>{
+                cb.onRejected(reason)
+            })
+        }
+        // 链式调用
+        then(onFulfilled, onRejected){
+            onFulfilled = typeof onFulfilled === 'function' ? onFulfilled : v => v
+            onRejected = typeof onRejected === 'function' ? onRejected : err =>{ throw err }
+            const self = this
+            if (this.status === 'fulfilled') {
+                onFulfilled(self.value)
+            }
+            if (this.status === 'rejected') {
+                onRejected(self.reason)
+            }
+            // 状态pending时 实现订阅的操作
+            if (this.status === 'pending') {
+                // 放入异步队列里
+                self.collbacks.push({
+                    onFulfilled: onFulfilled,
+                    onRejected: onRejected
+                })
+            }
+        }
+    }
+    const isForget = true
+    const mypromise = new MyPromise((resolve, reject) =>{
+        if (isForget) {
+            // resolve('哦耶，成功了')
+            setTimeout(()=>{
+                resolve('哦耶，成功了')
+            })
+        }else {
+            const message = new Error('对不起，失败了！！')
+            reject(message)
+        }
+    })
+    mypromise.then((res)=>{
+        console.log(res, 1111)
+    },(err)=>{
+        console.log(err, 222)
+    })
+
+
+
+</script>
+</html>

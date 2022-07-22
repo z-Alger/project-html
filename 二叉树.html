@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>js二叉树查询、删除</title>
+</head>
+<body>
+<script>
+    // 二叉树构造函数
+    function BinaryTree() {
+        // 节点的构造函数
+        var Node = function(key) {
+            this.key = key; // 节点的值
+            this.left = null; // 左子树节点
+            this.right = null; // 右子树节点
+        }
+
+        // 根节点
+        var root = null;
+
+        // 插入root的子节点
+        var insertNode = function(parentNode, childNode){
+            // 左子树构造
+            if (childNode.key < parentNode.key) {
+                // 为空时赋值，否则继续延伸
+                if (parentNode.left === null) {
+                    parentNode.left = childNode;
+                } else {
+                    insertNode(parentNode.left, childNode);
+                }
+            } else { // 右子树的构造 childNode.key > parentNode.key
+                if (parentNode.right === null) {
+                    parentNode.right = childNode;
+                } else {
+                    insertNode(parentNode.right, childNode);
+                }
+            }
+
+        }
+
+        // 获取根节点
+        this.getRoot = function() {
+            return root;
+        }
+
+        // 插入节点的实例方法
+        this.insert = function(key) {
+            var thisNode = new Node(key);
+
+            // 根节点赋值
+            if (root === null) {
+                root = thisNode;
+            } else {
+                // 插入子节点
+                insertNode(root, thisNode);
+            }
+        }
+
+        // 中序遍历的实例方法
+        this.inOrderTraverse = function(node, printLog) {
+            if (node !== null) {
+                // 优先去找左子树，然后中间节点，最后右子树
+                this.inOrderTraverse(node.left, printLog);
+                printLog(node.key);
+                this.inOrderTraverse(node.right, printLog);
+            }
+        }
+        // 前序遍历的实例方法
+        this.preTraverse = function(node, printLog) {
+            if (node !== null) {
+                // 优先输出中间节点，然后寻找左子树，最后右子树
+                printLog(node.key);
+                this.preTraverse(node.left, printLog);
+                this.preTraverse(node.right, printLog);
+            }
+        }
+        // 后序遍历的实例方法
+        this.postTraverse = function(node, printLog) {
+            if (node !== null) {
+                // 优先输出左子树，然后寻找右子树，最后中间节点
+                this.postTraverse(node.left, printLog);
+                this.postTraverse(node.right, printLog);
+                printLog(node.key);
+            }
+        }
+
+        // 查询最小值
+        this.minNode = function(node) {
+            if (node !== null) {
+                while(node && node.left !== null) {
+                    node = node.left;
+                }
+                return node.key;
+            }
+            return null;
+        }
+
+        // 查询最大值
+        this.maxNode = function(node) {
+            if (node !== null) {
+                while(node && node.right !== null) {
+                    node = node.right;
+                }
+                return node.key;
+            }
+            return null;
+        }
+
+        // 查找指定值
+        this.searchNode = function(node, key) {
+            if (node === null) {
+                return false;
+            }
+            // 要查找的值小于当前节点的值，用左子树继续查找
+            if (key < node.key) {
+                return this.searchNode(node.left, key);
+            } else if (key > node.key) { // 要查找的值大于当前节点的值，用右子树继续查找
+                return this.searchNode(node.right, key);
+            } else {
+                return true;
+            }
+        }
+    }
+
+    // 节点数组
+    var nodes = [8, 3, 10, 1, 5, 14, 4, 6, 13, 7, 9, 15, 2, 12];
+    // 打印方法
+    var printLog = key => console.log(key);
+    var binaryTree = new BinaryTree();
+    nodes.forEach( key => {
+        binaryTree.insert(key);
+    });
+    var root = binaryTree.getRoot();
+    // 中序遍历
+    binaryTree.inOrderTraverse(root, printLog);
+
+    // 前序遍历
+    binaryTree.preTraverse(root, printLog);
+
+    //后序遍历
+    binaryTree.postTraverse(root, printLog);
+
+    // 最小节点
+    console.log('binaryTree.root: ', root);
+    console.log('binaryTree.minNode(root): ', binaryTree.minNode(root));
+    // 最大节点
+    console.log('binaryTree.maxNode(root): ', binaryTree.maxNode(root));
+    console.log('searchNode(root, 1): ',  binaryTree.searchNode(root, 2));
+</script>
+</body>
+</html>
